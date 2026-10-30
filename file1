@@ -1,0 +1,71 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Model {
+private:
+    string data;
+public:
+    void setData(const string& newData) {
+        data = newData;
+    }
+
+    string getData() const {
+        return "Оброблено в Model: " + data;
+    }
+};
+
+class IView {
+public:
+    virtual void showData(const string& message) = 0;
+    virtual string getInput() = 0;
+    virtual ~IView() {}
+};
+
+class Presenter {
+private:
+    Model* model;
+    IView* view;
+public:
+    Presenter(Model* m, IView* v) {
+        model = m;
+        view = v;
+    }
+
+    void onButtonClicked() {
+        string userInput = view->getInput();
+        
+        model->setData(userInput);
+        
+        string result = model->getData();
+        view->showData(result);
+    }
+};
+
+class ConsoleView : public IView {
+private:
+    string lastInput;
+public:
+    string getInput() override {
+        string input;
+        cout << "Введіть якісь дані: ";
+        cin >> input;
+        return input;
+    }
+
+    void showData(const string& message) override {
+        cout << "Результат на екрані (View): " << message << endl;
+    }
+};
+
+int main() {
+
+    Model model;
+    ConsoleView view;
+    Presenter presenter(&model, &view);
+
+    presenter.onButtonClicked();
+
+    return 0;
+}
